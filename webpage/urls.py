@@ -18,5 +18,9 @@ from django.contrib import admin
 from . import views
 
 urlpatterns = [
-    url(r'^$', views.home, name='home'),
+	url(r'^$', views.project, name='project'),
+    url(r'^pclass/$', views.pclass, name='pclass'),
+    url(r'^sex/$', views.sex, name='sex'),
+    url(r'^tfare/$', views.tfare, name='tfare'),
+
 ]
