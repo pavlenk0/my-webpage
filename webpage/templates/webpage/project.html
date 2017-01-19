@@ -5,8 +5,136 @@ Project
 {% endblock %}
 
 {% block content %}
+<hr>
 <h1>Project</h1>
+<hr>
 <p>A century has sailed by since the luxury steamship RMS Titanic met its catastrophic end in the North Atlantic, plunging two miles to the ocean floor after sideswiping an iceberg during its maiden voyage. Rather than the intended Port of New York, a deep-sea grave became the pride of the White Star Line’s final destination in the early hours of April 15, 1912. More than 1,500 people lost their lives in the disaster. In the decades since her demise, Titanic has inspired countless books and several notable films while continuing to make headlines, particularly since the 1985 discovery of her resting place off the coast of Newfoundland. Meanwhile, her story has entered the public consciousness as a powerful cautionary tale about the perils of human hubris.</p>
 <p>The goal of the project: parse data from titanic dataset and visualize passenger class, sex and ticket fare based on age range with d3.js crossfilter on the web page.</p> 
 <p>You have to switch the tabs to see different visualizations based on age range.</p>
+<p>On the graphic below you can see the number of people based on age range</p>
+<hr>
+{% endblock %}
+
+{% block body %}
+
+<script type="text/javascript">
+var height = 500, 
+    width = 500, 
+    margin=30,
+    rawData = [{x: 12, y: 0}, {x: 10, y: 1}, {x: 12, y: 2}, {x: 7, y: 3}, {x: 10, y: 4}, {x: 5, y: 5}, {x: 6, y: 6}, 
+    {x: 4, y: 7}, {x: 6, y: 8}, {x: 10, y: 9}, {x: 4, y: 10}, {x: 5, y: 11}, {x: 3, y: 12}, {x: 5, y: 13}, {x: 10, y: 14}, 
+    {x: 6, y: 15}, {x: 19, y: 16}, {x: 20, y: 17}, {x: 42, y: 18}, {x: 29, y: 19}, {x: 24, y: 20}, {x: 41, y: 21}, 
+    {x: 44, y: 22},{x: 27, y: 23},{x: 48, y: 24},{x: 34, y: 25},{x: 31, y: 26},{x: 30, y: 27},{x: 35, y: 28},{x: 30, y: 29},{x: 42, y: 30},{x: 23, y: 31},{x: 28, y: 32},{x: 21, y: 33},{x: 18, y: 34},{x: 23, y: 35}, {x: 33, y: 36},
+    {x: 9, y: 37},{x: 15, y: 38},{x: 20, y: 39},{x: 21, y: 40},{x: 11, y: 41},{x: 18, y: 42},{x: 9, y: 43},{x: 10, y: 44},
+    {x: 23, y: 45},{x: 6, y: 46},{x: 14, y: 47},{x: 14, y: 48}, {x: 9, y: 49},{x: 15, y: 50},{x: 8, y: 51},{x: 6, y: 52},
+    {x: 4, y: 53},{x: 10, y: 54},{x: 9, y: 55},{x: 4, y: 56},{x: 5, y: 57},{x: 6, y: 58},{x: 3, y: 59}, {x: 8, y: 60}, 
+    {x: 5, y: 61},{x: 5, y: 62},{x: 4, y: 63},{x: 5, y: 64},{x: 3, y: 65}, {x: 1, y: 66},{x: 1, y: 67},{x: 0, y: 68},
+    {x: 0, y: 69},{x: 3, y: 70},{x: 2, y: 71},{x: 0, y: 72},{x: 0, y: 73},{x: 1, y: 74},{x: 0, y: 75},{ x: 1, y: 76},
+    {x: 0, y: 77},{x: 0, y: 78},{x: 0, y: 79},{x: 1, y: 80}
+    ];
+
+    data=[];
+    
+// создание объекта svg
+var svg = d3.select("body").append("svg")
+        .attr("class", "axis")
+        .attr("width", width)
+        .attr("height", height);
+ 
+// длина оси X= ширина контейнера svg - отступ слева и справа
+var xAxisLength = width - 2 * margin;     
+  
+// длина оси Y = высота контейнера svg - отступ сверху и снизу
+var yAxisLength = height - 2 * margin;
+    
+// функция интерполяции значений на ось Х  
+var scaleX = d3.scale.linear()
+            .domain([0, 50])
+            .range([0, xAxisLength]);
+             
+// функция интерполяции значений на ось Y
+var scaleY = d3.scale.linear()
+            .domain([80, 0])
+            .range([0, yAxisLength]);
+// масштабирование реальных данных в данные для нашей координатной системы
+for(i=0; i<rawData.length; i++)
+    data.push({x: scaleX(rawData[i].x)+margin, y: scaleY(rawData[i].y) + margin});
+             
+// создаем ось X   
+var xAxis = d3.svg.axis()
+             .scale(scaleX)
+             .orient("bottom");
+// создаем ось Y             
+var yAxis = d3.svg.axis()
+             .scale(scaleY)
+             .orient("left");
+              
+ // отрисовка оси Х             
+svg.append("g")       
+     .attr("class", "x-axis")
+     .attr("transform",  // сдвиг оси вниз и вправо
+         "translate(" + margin + "," + (height - margin) + ")")
+    .call(xAxis);
+ 
+ // отрисовка оси Y 
+svg.append("g")       
+    .attr("class", "y-axis")
+    .attr("transform", // сдвиг оси вниз и вправо на margin
+            "translate(" + margin + "," + margin + ")") 
+    .call(yAxis) ; 
+ 
+// создаем набор вертикальных линий для сетки   
+d3.selectAll("g.x-axis g.tick")
+    .append("line")
+    .classed("grid-line", true)
+    .attr("x1", 0)
+    .attr("y1", 0)
+    .attr("x2", 0)
+    .attr("y2", - (yAxisLength));
+     
+// рисуем горизонтальные линии координатной сетки
+d3.selectAll("g.y-axis g.tick")
+    .append("line")
+    .classed("grid-line", true)
+    .attr("x1", 0)
+    .attr("y1", 0)
+    .attr("x2", xAxisLength)
+    .attr("y2", 0);
+ 
+// функция, создающая по массиву точек линии
+var line = d3.svg.line()
+            .x(function(d){return d.x;})
+            .y(function(d){return d.y;});
+// добавляем путь
+
+
+var g = svg.append("g");
+    g.append("path")
+    .attr("d", line(data))
+    .style("stroke", "steelblue")
+    .style("stroke-width", 2);
+ 
+g.append("text")
+    .attr("x", margin + 11)
+    .attr("y", margin - 11)
+    .attr("text-anchor", "end")
+    .style("font-size", "11px")
+    .text("Age");
+ 
+g.append("text")
+    .attr("x", width - margin + 11)
+    .attr("y", height - margin - 5)
+    .attr("text-anchor", "end")
+    .style("font-size", "11px")
+    .text("Quantity");
+// добавляем отметки к точкам
+svg.selectAll(".dot")
+    .data(rawData)
+    .enter().append("circle")
+    .attr("class", "dot")
+    .attr("r", 3.5)
+    .attr("cx", function(d) { return scaleX(d.x)+margin; })
+    .attr("cy", function(d) { return scaleY(d.y)+margin; });
+
+</script>
 {% endblock %}
